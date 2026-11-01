@@ -61,10 +61,17 @@ async function chatWithAssistant(req, res, next) {
       details: a.details
     }));
 
-    // 2. Try calling the Python Agentic AI Service
+    // 2. Try calling the Python Agentic AI Service using runtime binding
     let agentResult = null;
     try {
-      const response = await fetch(`${AI_SERVICE_URL}/api/agent/chat`, {
+      // Resolve bound variable at runtime inside function
+      const aiBaseUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+      const targetUrl = new URL(
+        'api/agent/chat',
+        aiBaseUrl.endsWith('/') ? aiBaseUrl : `${aiBaseUrl}/`
+      ).toString();
+
+      const response = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -75,7 +82,7 @@ async function chatWithAssistant(req, res, next) {
           userId,
           userRole: req.userRole
         }),
-        signal: AbortSignal.timeout(3500)
+        signal: AbortSignal.timeout(4000)
       });
 
       if (response.ok) {

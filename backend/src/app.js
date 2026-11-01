@@ -33,8 +33,10 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Basic Health Check Endpoint (Required by Section 3, Step 5)
-app.get('/api/health', (req, res) => {
+// API Router (handles both with and without /api prefix for Vercel rewrites)
+const apiRouter = express.Router();
+
+apiRouter.get('/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -45,15 +47,18 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/organizations', organizationRoutes);
-app.use('/api/tenants', tenantRoutes);
-app.use('/api/boards', boardRoutes);
-app.use('/api/columns', columnRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/activities', activityRoutes);
-app.use('/api/ai', aiRoutes);
+apiRouter.use('/auth', authRoutes);
+apiRouter.use('/organizations', organizationRoutes);
+apiRouter.use('/tenants', tenantRoutes);
+apiRouter.use('/boards', boardRoutes);
+apiRouter.use('/columns', columnRoutes);
+apiRouter.use('/tasks', taskRoutes);
+apiRouter.use('/activities', activityRoutes);
+apiRouter.use('/ai', aiRoutes);
+
+// Mount router on both '/api' and '/' to reconcile path prefix across local and Vercel routing
+app.use('/api', apiRouter);
+app.use('/', apiRouter);
 
 // 404 Handler
 app.use((req, res) => {
