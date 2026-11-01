@@ -87,7 +87,9 @@ export const Login = () => {
       setLoading(true);
       await login(demoEmail, 'Password123!');
     } catch (err) {
-      setError(err.response?.data?.error || 'Quick login failed');
+      console.error('Quick login failed:', err);
+      const msg = err.response?.data?.error || err.message || 'Quick login failed. Please ensure the backend is running.';
+      setError(msg);
     } finally {
       setLoading(false);
     }

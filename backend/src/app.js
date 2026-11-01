@@ -24,7 +24,10 @@ initSocket(server, CORS_ORIGIN);
 
 // Global Middleware
 app.use(cors({
-  origin: CORS_ORIGIN,
+  origin: (origin, callback) => {
+    // Dynamically allow any origin (localhost, 127.0.0.1, LAN IP, or tools with no origin)
+    callback(null, true);
+  },
   credentials: true
 }));
 app.use(express.json());

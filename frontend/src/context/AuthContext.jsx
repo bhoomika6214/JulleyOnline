@@ -80,6 +80,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
+    // Clear any previous stale tenant state before authenticating new user
+    setApiTenantId(null);
+    localStorage.removeItem('selectedTenantId');
+    localStorage.removeItem('selectedOrgId');
+
     const res = await api.post('/auth/login', { email, password });
     const { token: newToken, user: newUser } = res.data;
 

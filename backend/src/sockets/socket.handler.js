@@ -11,7 +11,7 @@ const tenantPresence = new Map();
 function initSocket(server, corsOrigin) {
   io = new Server(server, {
     cors: {
-      origin: corsOrigin || '*',
+      origin: (origin, callback) => callback(null, true),
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
       credentials: true
     }
